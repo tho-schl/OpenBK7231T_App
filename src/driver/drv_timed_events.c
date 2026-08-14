@@ -13,27 +13,12 @@
 #include "../hal/hal_ota.h"
 
 #include "drv_deviceclock.h"
+#include "drv_timed_events.h"
 
 #define M_PI   3.14159265358979323846264338327950288
 #define LOG_FEATURE LOG_FEATURE_NTP
 
 time_t  clock_eventsTime = 0;
-
-typedef struct clockEvent_s {
-	byte hour;
-	byte minute;
-	byte second;
-	byte weekDayFlags;
-#if ENABLE_TIME_SUNRISE_SUNSET
-	byte lastDay;  /* used so we don't repeat sunrise sunset events the same day */
-	byte sunflags;  /* flags for sunrise/sunset as follows: */
-#define SUNRISE_FLAG (1 << 0)
-#define SUNSET_FLAG (1 << 1)
-#endif
-	int id;
-	char *command;
-	struct clockEvent_s *next;
-} clockEvent_t;
 
 clockEvent_t *clock_events = 0;
 

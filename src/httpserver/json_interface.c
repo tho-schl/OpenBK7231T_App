@@ -26,6 +26,7 @@
 
 
 #include "../libraries/obktime/obktime.h"	// for time functions
+#include "../driver/drv_timed_events.h"
 
 #if ENABLE_TASMOTA_JSON
 
