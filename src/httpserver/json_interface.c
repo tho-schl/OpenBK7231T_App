@@ -522,6 +522,51 @@ static int http_tasmota_json_status_STS(void* request, jsonCb_t printer, bool bA
 	printer(request, "}");
 	return 0;
 }
+
+static int http_tasmota_json_status_TIM_clock_timer(void* request, jsonCb_t printer) {
+	clockEvent_t* e = clock_events;
+	bool first = true;
+
+	printer(request, ",\"ClockEvents\":[");
+
+	while (e) {
+		if (!first) {
+			printer(request, ",");
+		}
+		first = false;
+
+		printer(request, "{");
+
+		printer(request, "\"Id\":%i,", e->id);
+		printer(request, "\"Time\":\"%02i:%02i:%02i\",",
+			(int)e->hour,
+			(int)e->minute,
+			(int)e->second);
+		printer(request, "\"Days\":%u,",
+			(unsigned int)e->weekDayFlags);
+
+#if ENABLE_TIME_SUNRISE_SUNSET
+		if (e->sunflags & SUNRISE_FLAG) {
+			printer(request, "\"Sun\":\"sunrise\",");
+		}
+		else if (e->sunflags & SUNSET_FLAG) {
+			printer(request, "\"Sun\":\"sunset\",");
+		}
+#endif
+
+		JSON_PrintKeyValue_String(request, printer,
+			"Command", e->command, false);
+
+		printer(request, "}");
+
+		e = e->next;
+	}
+
+	printer(request, "]");
+
+	return 0;
+}
+
 static int http_tasmota_json_status_TIM(void* request, jsonCb_t printer) {
 	char buff[20];
 
@@ -550,6 +595,9 @@ static int http_tasmota_json_status_TIM(void* request, jsonCb_t printer) {
 	JSON_PrintKeyValue_String(request, printer, "Timezone", tmp, true);
 	JSON_PrintKeyValue_String(request, printer, "Sunrise", "07:50", true);
 	JSON_PrintKeyValue_String(request, printer, "Sunset", "17:17", false);
+	
+	http_tasmota_json_status_TIM_clock_timer(request, printer);
+	
 	printer(request, "}");
 	return 0;
 }
