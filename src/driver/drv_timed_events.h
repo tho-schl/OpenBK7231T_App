@@ -19,4 +19,6 @@ typedef struct clockEvent_s {
 	struct clockEvent_s *next;
 } clockEvent_t;
 
+clockEvent_t * getClockEvents();
+
 #endif //DRV_TIMED_EVENTS_H

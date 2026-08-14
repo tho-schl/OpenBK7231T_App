@@ -22,6 +22,10 @@ time_t  clock_eventsTime = 0;
 
 clockEvent_t *clock_events = 0;
 
+clockEvent_t * getClockEvents(){
+	return clock_events;
+}
+
 #if ENABLE_TIME_SUNRISE_SUNSET
 /* Sunrise/sunset algorithm, somewhat based on https://edwilliams.org/sunrise_sunset_algorithm.htm and tasmota code */
 const float pi2 = (M_PI * 2);

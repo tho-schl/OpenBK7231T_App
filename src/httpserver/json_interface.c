@@ -525,12 +525,12 @@ static int http_tasmota_json_status_STS(void* request, jsonCb_t printer, bool bA
 }
 
 static int http_tasmota_json_status_TIM_clock_timer(void* request, jsonCb_t printer) {
-	clockEvent_t* e = clock_events;
+	clockEvent_t* clock_events = getClockEvents();
 	bool first = true;
 
 	printer(request, ",\"ClockEvents\":[");
 
-	while (e) {
+	while (clock_events) {
 		if (!first) {
 			printer(request, ",");
 		}
@@ -538,29 +538,29 @@ static int http_tasmota_json_status_TIM_clock_timer(void* request, jsonCb_t prin
 
 		printer(request, "{");
 
-		printer(request, "\"Id\":%i,", e->id);
+		printer(request, "\"Id\":%i,", clock_events->id);
 		printer(request, "\"Time\":\"%02i:%02i:%02i\",",
-			(int)e->hour,
-			(int)e->minute,
-			(int)e->second);
+			(int)clock_events->hour,
+			(int)clock_events->minute,
+			(int)clock_events->second);
 		printer(request, "\"Days\":%u,",
-			(unsigned int)e->weekDayFlags);
+			(unsigned int)clock_events->weekDayFlags);
 
 #if ENABLE_TIME_SUNRISE_SUNSET
-		if (e->sunflags & SUNRISE_FLAG) {
+		if (clock_events->sunflags & SUNRISE_FLAG) {
 			printer(request, "\"Sun\":\"sunrise\",");
 		}
-		else if (e->sunflags & SUNSET_FLAG) {
+		else if (clock_events->sunflags & SUNSET_FLAG) {
 			printer(request, "\"Sun\":\"sunset\",");
 		}
 #endif
 
 		JSON_PrintKeyValue_String(request, printer,
-			"Command", e->command, false);
+			"Command", clock_events->command, false);
 
 		printer(request, "}");
 
-		e = e->next;
+		clock_events = clock_events->next;
 	}
 
 	printer(request, "]");
